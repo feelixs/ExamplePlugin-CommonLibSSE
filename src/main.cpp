@@ -54,6 +54,9 @@ namespace
 
     void InstallHooks()
     {
+        // Initialize the trampoline with a larger buffer size (e.g., 64 KB)
+        SKSE::AllocTrampoline(64 * 1024);
+
         // Set up the hook to intercept calls to the target function
         SKSE::GetTrampoline().write_branch<5>(
             _ShoutFunction.address(),
