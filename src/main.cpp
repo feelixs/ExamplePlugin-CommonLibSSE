@@ -59,11 +59,16 @@ namespace
 
         // Set up a branch middle to handle displacement out of range
         auto& trampoline = SKSE::GetTrampoline();
-        uintptr_t targetAddress = _ShoutFunction.address();
-        auto branchMiddle = trampoline.allocateMiddle<uintptr_t>(targetAddress, HookedShoutFunction);
 
-        // Hook the function with the branch middle
-        trampoline.write_branch<5>(targetAddress, branchMiddle);
+        // Allocate a middle location for the trampoline
+        auto branchMiddle = trampoline.allocateMiddle<void*>();
+        *branchMiddle = (void*)HookedShoutFunction;
+
+        // Write the branch to the branch middle
+        trampoline.write_branch<5>(
+            _ShoutFunction.address(),
+            reinterpret_cast<uintptr_t>(branchMiddle)
+        );
     }
 }
 
