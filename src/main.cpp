@@ -38,7 +38,7 @@ namespace
     using ShoutFunction_t = void(*)(int64_t*, int);
 
     // Replace 0x5b1c20 with the actual address from your decompiler output
-    REL::Relocation<ShoutFunction_t> _ShoutFunction{ REL::ID(0x1405b1c7) };
+    REL::Relocation<ShoutFunction_t> _ShoutFunction{ REL::Relocation(0x1405b1c7) };
 
     void HookedShoutFunction(int64_t* param_1, int param_2)
     {
