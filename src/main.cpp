@@ -37,8 +37,9 @@ namespace
 
     using ShoutFunction_t = void(*)(int64_t*, int);
 
-    // Specify the template type and address directly
-    REL::Relocation<ShoutFunction_t> _ShoutFunction{ 0x1405b1c7 };
+    // Define the relocation ID for the function
+    REL::RelocationID shoutFunctionID(67497, 68808); // Example IDs for SE and AE
+    REL::Relocation<ShoutFunction_t> _ShoutFunction{ shoutFunctionID };
 
     void HookedShoutFunction(int64_t* param_1, int param_2)
     {
@@ -58,10 +59,14 @@ namespace
         SKSE::AllocTrampoline(64 * 1024);
 
         // Set up the hook to intercept calls to the target function
-        SKSE::GetTrampoline().write_branch<5>(
-            _ShoutFunction.address(),
-            HookedShoutFunction
-        );
+        auto& trampoline = SKSE::GetTrampoline();
+
+        // Calculate the target address with the offset
+        auto target = _ShoutFunction.address() + 0x13F; // Adjust the offset as needed
+        auto hook = reinterpret_cast<std::uintptr_t>(HookedShoutFunction);
+
+        // Write the absolute jump
+        trampoline.write_call<5>(target, hook);
     }
 }
 
