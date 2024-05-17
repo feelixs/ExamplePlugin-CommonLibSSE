@@ -37,8 +37,8 @@ namespace
 
     using ShoutFunction_t = void(*)(int64_t*, int);
 
-    // Specify the address type explicitly
-    REL::Relocation<ShoutFunction_t> _ShoutFunction{ REL::RelocationID(0x1405b1c7) };
+    // Specify the template type and address directly
+    REL::Relocation<ShoutFunction_t> _ShoutFunction{ 0x1405b1c7 };
 
     void HookedShoutFunction(int64_t* param_1, int param_2)
     {
