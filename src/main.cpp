@@ -57,18 +57,15 @@ namespace
         // Initialize the trampoline with a larger buffer size (e.g., 64 KB)
         SKSE::AllocTrampoline(64 * 1024);
 
-        // Set up a branch middle to handle displacement out of range
+        // Set up the hook to intercept calls to the target function
         auto& trampoline = SKSE::GetTrampoline();
 
-        // Allocate a middle location for the trampoline
-        auto branchMiddle = trampoline.allocateMiddle<void*>();
-        *branchMiddle = (void*)HookedShoutFunction;
+        // Calculate the absolute address
+        auto target = _ShoutFunction.address();
+        auto hook = reinterpret_cast<std::uintptr_t>(HookedShoutFunction);
 
-        // Write the branch to the branch middle
-        trampoline.write_branch<5>(
-            _ShoutFunction.address(),
-            reinterpret_cast<uintptr_t>(branchMiddle)
-        );
+        // Write the absolute jump
+        trampoline.write_call<5>(target, hook);
     }
 }
 
