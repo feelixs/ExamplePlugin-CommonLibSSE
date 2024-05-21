@@ -24,7 +24,7 @@ namespace Hooks
 		_ShoutFunction(param_1, param_2);
 	}
 
-	REL::Relocation<decltype(PlayerHook::HookedShoutFunction)> PlayerHook::_ShoutFunction;
+	//REL::Relocation<decltype(PlayerHook::HookedShoutFunction)> PlayerHook::_ShoutFunction;
 
 	void Install()
 	{
