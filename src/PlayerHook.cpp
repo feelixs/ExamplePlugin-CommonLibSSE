@@ -23,7 +23,7 @@ namespace Hooks
 		// Call the original function with the modified param_2
 		_ShoutFunction(param_1, param_2);
 	}
-	
+
 	void Install()
 	{
 		logger::trace("Hooking...");
