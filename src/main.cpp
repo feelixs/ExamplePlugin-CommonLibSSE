@@ -1,4 +1,12 @@
 #include "Hooks.h"
+#include <SKSE/SKSE.h>
+#include <RE/Skyrim.h>
+#include <REL/Relocation.h>
+#include <SKSE/Trampoline.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/msvc_sink.h>
+
+#define RELOCATION_ID(seID, aeID) (REL::Module::IsSE() ? REL::ID(seID) : REL::ID(aeID))
 
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
@@ -99,7 +107,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
 
 	SKSE::Init(a_skse);
-	SKSE::AllocTrampoline(1 << 9);
+	SKSE::AllocTrampoline(1 << 9);  // Allocate 512 bytes for the trampoline buffer
 
 	auto messaging = SKSE::GetMessagingInterface();
 	if (!messaging->RegisterListener("SKSE", MessageHandler)) {
