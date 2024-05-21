@@ -1,20 +1,22 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
-  "name": "commonlibsse-ng",
-  "version-semver": "3.7.0",
+  "name": "example",
+  "version-semver": "1",
   "port-version": 0,
-  "description": "A fork of CommonLibSSE with advanced features for modern SKSE development.",
-  "homepage": "https://github.com/CharmedBaryon/CommonLibSSE",
+  "description": "exmplae project",
+  "homepage": "",
   "license": "MIT",
   "supports": "windows & x64",
-  "builtin-baseline": "fc3f61366102c1f0d4547c06d03c523bb18c13a7",
+  "builtin-baseline": "",
   "dependencies": [
     {
       "name": "vcpkg-cmake-config",
       "host": true
     },
     "rapidcsv",
-    "spdlog"
+    "spdlog",
+    "boost-stl-interfaces",
+    "rsm-binary-io"
   ],
   "features": {
     "tests": {
