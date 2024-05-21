@@ -26,4 +26,11 @@ namespace Hooks
 
 	// Define the static member
 	REL::Relocation<decltype(PlayerCharacterHook::HookedShoutFunction)> PlayerCharacterHook::_ShoutFunction;
+
+	void Install()
+	{
+		logger::trace("Hooking...");
+		PlayerCharacterHook::Hook();
+		logger::trace("...success");
+	}
 }
