@@ -1,92 +1,112 @@
-#include <SKSE/SKSE.h>
-#include <RE/Skyrim.h>
-#include <REL/Relocation.h>
-#include <SKSE/Trampoline.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/msvc_sink.h>
+#include "PlayerCharacterHook.h"
+
+void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
+{
+	// Handle various game events
+	switch (a_msg->type) {
+	case SKSE::MessagingInterface::kDataLoaded:
+		// Initialize hooks and other settings when data is loaded
+		Hooks::PlayerCharacterHook::Hook();
+		break;
+	case SKSE::MessagingInterface::kPostLoad:
+		// Post-load event handling
+		break;
+	case SKSE::MessagingInterface::kPostPostLoad:
+		// Post-post-load event handling
+		break;
+	case SKSE::MessagingInterface::kPreLoadGame:
+		// Pre-load game event handling
+		break;
+	case SKSE::MessagingInterface::kPostLoadGame:
+	case SKSE::MessagingInterface::kNewGame:
+		// Post-load game or new game event handling
+		break;
+	}
+}
 
 namespace
 {
-    void InitializeLog()
-    {
+	void InitializeLog()
+	{
 #ifndef NDEBUG
-        auto sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
+		auto sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
 #else
-        auto path = logger::log_directory();
-        if (!path) {
-            util::report_and_fail("Failed to find standard logging directory"sv);
-        }
+		auto path = logger::log_directory();
+		if (!path) {
+			util::report_and_fail("Failed to find standard logging directory"sv);
+		}
 
-        *path /= fmt::format("{}.log"sv, Plugin::NAME);
-        auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
+		*path /= fmt::format("{}.log"sv, Plugin::NAME);
+		auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
 #endif
 
 #ifndef NDEBUG
-        const auto level = spdlog::level::trace;
+		const auto level = spdlog::level::trace;
 #else
-        const auto level = spdlog::level::info;
+		const auto level = spdlog::level::info;
 #endif
 
-        auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
-        log->set_level(level);
-        log->flush_on(level);
+		auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
+		log->set_level(level);
+		log->flush_on(level);
 
-        spdlog::set_default_logger(std::move(log));
-        spdlog::set_pattern("%g(%#): [%^%l%$] %v"s);
-    }
+		spdlog::set_default_logger(std::move(log));
+		spdlog::set_pattern("%g(%#): [%^%l%$] %v"s);
+	}
+}
 
-    using ShoutFunction_t = void(*)(int64_t*, int);
+extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
+{
+	a_info->infoVersion = SKSE::PluginInfo::kVersion;
+	a_info->name = Plugin::NAME.data();
+	a_info->version = Plugin::VERSION[0];
 
-    // Specify the template type and address directly
-    REL::Relocation<ShoutFunction_t> _ShoutFunction{ 0x1405b1c7 };
+	if (a_skse->IsEditor()) {
+		logger::critical("Loaded in editor, marking as incompatible"sv);
+		return false;
+	}
 
-    void HookedShoutFunction(int64_t* param_1, int param_2)
-    {
-        // Unconditionally set param_2 to a value that should bypass the error checks and jump table
-        param_2 = 100; // Example value > 99
+	const auto ver = a_skse->RuntimeVersion();
+	if (ver < SKSE::RUNTIME_SSE_1_5_39) {
+		logger::critical(FMT_STRING("Unsupported runtime version {}"), ver.string());
+		return false;
+	}
 
-        // Log the modification for debugging purposes
-        logger::info("HookedShoutFunction called, setting param_2 to {}", param_2);
-
-        // Call the original function with the modified param_2
-        _ShoutFunction(param_1, param_2);
-    }
-
-    void InstallHooks()
-    {
-        // Initialize the trampoline with a larger buffer size (e.g., 64 KB)
-        SKSE::AllocTrampoline(64 * 1024);
-
-        // Set up the hook to intercept calls to the target function
-        SKSE::GetTrampoline().write_branch<5>(
-            _ShoutFunction.address(),
-            HookedShoutFunction
-        );
-    }
+	return true;
 }
 
 extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
-    SKSE::PluginVersionData v;
+	SKSE::PluginVersionData v;
 
-    v.PluginVersion(Plugin::VERSION);
-    v.PluginName(Plugin::NAME);
+	v.PluginVersion(Plugin::VERSION);
+	v.PluginName(Plugin::NAME);
+	v.AuthorName("YourName");
+	v.UsesAddressLibrary(true);
+	v.CompatibleVersions({ SKSE::RUNTIME_SSE_LATEST });
+	v.HasNoStructUse(true);
 
-    v.UsesAddressLibrary(true);
-    v.CompatibleVersions({ SKSE::RUNTIME_LATEST });
-
-    return v;
+	return v;
 }();
 
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {
-    InitializeLog();
-    logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
+#ifndef NDEBUG
+	while (!IsDebuggerPresent()) { Sleep(100); }
+#endif
+	REL::Module::reset();  // Clib-NG bug workaround
 
-    SKSE::Init(a_skse);
+	InitializeLog();
+	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
 
-    InstallHooks();
+	SKSE::Init(a_skse);
+	SKSE::AllocTrampoline(1 << 9);
 
-    logger::info("Hooks installed successfully");
+	auto messaging = SKSE::GetMessagingInterface();
+	if (!messaging->RegisterListener("SKSE", MessageHandler)) {
+		return false;
+	}
 
-    return true;
+	Hooks::Install();
+
+	return true;
 }
