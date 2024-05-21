@@ -14,6 +14,7 @@ namespace Hooks
 
 	private:
 		static void HookedShoutFunction(int64_t* param_1, int param_2);
+		static inline REL::Relocation<decltype(HookedShoutFunction)> _ShoutFunction;
 	};
 
 	void Install();
