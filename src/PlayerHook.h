@@ -17,5 +17,5 @@ namespace Hooks
 		static inline REL::Relocation<decltype(HookedShoutFunction)> _ShoutFunction;
 	};
 
-	void Hooks::Install();
+	void Install();
 }
