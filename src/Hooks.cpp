@@ -1,9 +1,4 @@
 #include "Hooks.h"
-#include "Settings.h"
-#include "DirectionalMovementHandler.h"
-#include "Offsets.h"
-#include "Utils.h"
-#include "RayCast.h"
 
 namespace Hooks
 {
