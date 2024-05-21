@@ -1,4 +1,4 @@
-#include "Hooks.h"
+#include "PlayerCharacterHook.h"
 #include <SKSE/SKSE.h>
 #include <RE/Skyrim.h>
 #include <REL/Relocation.h>
@@ -13,7 +13,6 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 	// Handle various game events
 	switch (a_msg->type) {
 	case SKSE::MessagingInterface::kDataLoaded:
-		// Initialize hooks and other settings when data is loaded
 		Hooks::PlayerCharacterHook::Hook();
 		break;
 	case SKSE::MessagingInterface::kPostLoad:
