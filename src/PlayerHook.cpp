@@ -8,7 +8,7 @@ namespace Hooks
 		auto& trampoline = SKSE::GetTrampoline();
 
 		// Using example addresses, replace with actual IDs
-		REL::Relocation<std::uintptr_t> shoutFunctionID{ RELOCATION_ID(67497, 68808) };
+		REL::Relocation<std::uintptr_t> shoutFunctionID{ RELOCATION_ID(0x1405b1c7, 0x1405b1c7) };
 		_ShoutFunction = trampoline.write_call<5>(shoutFunctionID.address(), HookedShoutFunction);
 	}
 
