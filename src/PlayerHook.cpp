@@ -19,7 +19,7 @@ namespace Hooks
     {
         auto& trampoline = SKSE::GetTrampoline();
 
-        REL::Relocation<std::uintptr_t> isInMidairFunc{ REL::ID(36259, 37243) };
+        REL::Relocation<std::uintptr_t> isInMidairFunc{ RELOCATION_ID(36259, 37243) };
         _IsInMidair = trampoline.write_call<5>(isInMidairFunc.address(), HookedIsInMidair);
     }
 
