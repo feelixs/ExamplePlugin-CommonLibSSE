@@ -3,7 +3,7 @@
 
 namespace Hooks
 {
-    bool HookedIsInMidair(const RE::Actor* actor)
+    bool PlayerHook::HookedIsInMidair(const RE::Actor* actor)
     {
         if (!actor) {
             spdlog::error("Actor is null");
@@ -27,14 +27,7 @@ namespace Hooks
     {
         auto& trampoline = SKSE::GetTrampoline();
 
-        REL::Relocation<decltype(&RE::Actor::IsInMidair)> func{ RELOCATION_ID(36259, 37243) };
-        _IsInMidair = func.address(); // Get the address of the original function
-
-        // Hook the function using trampoline
-        trampoline.write_call<5>(
-                REL::Relocate<uintptr_t>(func.address()), // Use Relocate to handle SE and AE differences
-                reinterpret_cast<uintptr_t>(HookedIsInMidair)
-        );
+        _IsInMidair = trampoline.write_call<5>(REL::Relocation<decltype(&RE::Actor::IsInMidair)>::address(), HookedIsInMidair);
 
         if (!_IsInMidair.address()) {
             spdlog::error("Failed to hook IsInMidair function");
