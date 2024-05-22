@@ -9,8 +9,9 @@ namespace Hooks
        /* if (actor->IsPlayerRef()) {
             spdlog::info("OVERRIDING Player to not in midair");
             return false;
-        }*/
-        return _IsInMidair(actor);
+        }
+        return _IsInMidair(actor);*/
+       return true;
     }
 
     void PlayerHook::Hook()
