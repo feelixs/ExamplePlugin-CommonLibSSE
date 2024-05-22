@@ -9,15 +9,12 @@ namespace Hooks
             spdlog::info("Actor is null");
             return false;
         }
-
         spdlog::info("HookedIsInMidair called for actor: {}", actor->GetName());
-
         // Custom logic: Always return false if the actor is the player
         if (actor->IsPlayerRef()) {
             spdlog::info("Actor is player, returning false for IsInMidair check");
             return false;
         }
-
         // Call the original function for other actors
         return _IsInMidair(actor);
     }
@@ -25,8 +22,8 @@ namespace Hooks
     void PlayerHook::Hook()
     {
         auto& trampoline = SKSE::GetTrampoline();
-        REL::Relocation<func_t> isInMidairFunc{ RELOCATION_ID(36259, 37243) };
-        _IsInMidair = trampoline.write_call<5>(isInMidairFunc.address(), &PlayerHook::HookedIsInMidair);
+        REL::Relocation<std::uintptr_t> hook{ RELOCATION_ID(36259, 37243) };
+        _IsInMidair = trampoline.write_call<5>(hook.address(), HookedIsInMidair);
     }
 
     void Install()
