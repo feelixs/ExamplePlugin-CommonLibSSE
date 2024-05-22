@@ -27,10 +27,10 @@ namespace Hooks
         auto& trampoline = SKSE::GetTrampoline();
 
         // Example IDs for SE and AE versions
-        REL::Relocation<std::uintptr_t> isInMidairFunc{ REL::ID(36259, 37243) };
+        REL::Relocation<std::uintptr_t> isInMidairFunc{ RELOCATION_ID(36259, 37243) };
         _IsInMidair = trampoline.write_call<5>(isInMidairFunc.address(), HookedIsInMidair);
 
-        if (!_IsInMidair) {
+        if (!_IsInMidair.address()) {
             spdlog::error("Failed to hook IsInMidair function");
         } else {
             spdlog::info("Successfully hooked IsInMidair function");
