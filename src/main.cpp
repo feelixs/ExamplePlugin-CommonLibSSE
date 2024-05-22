@@ -93,21 +93,3 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
     Hooks::Install();
     return true;
 }
-
-extern "C" DLLEXPORT void* SKSEAPI RequestPluginAPI(const TDM_API::InterfaceVersion a_interfaceVersion)
-{
-    auto api = Messaging::TDMInterface::GetSingleton();
-
-    logger::info("ExamplePlugin::RequestPluginAPI called, InterfaceVersion {}", static_cast<uint8_t>(a_interfaceVersion));
-
-    switch (a_interfaceVersion) {
-        case TDM_API::InterfaceVersion::V1:
-            [[fallthrough]];
-        case TDM_API::InterfaceVersion::V2:
-            logger::info("ExamplePlugin::RequestPluginAPI returned the API singleton");
-            return static_cast<void*>(api);
-    }
-
-    logger::info("ExamplePlugin::RequestPluginAPI requested the wrong interface version");
-    return nullptr;
-}
