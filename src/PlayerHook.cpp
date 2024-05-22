@@ -3,11 +3,11 @@
 
 namespace Hooks
 {
-    bool PlayerHook::HookedIsInMidair(const RE::Actor* actor)
+    bool __fastcall PlayerHook::HookedIsInMidair(RE::Actor* actor)
     {
         // Custom logic: Always return false if the actor is the player
         if (actor->IsPlayerRef()) {
-            spdlog::info("OVERRIDING Player to not in midair");
+            spdlog::info("Player set to not in midair");
             return false;
         }
 
@@ -19,7 +19,8 @@ namespace Hooks
     {
         auto& trampoline = SKSE::GetTrampoline();
 
-        REL::Relocation<std::uintptr_t> isInMidairFunc{ RELOCATION_ID(36259, 37243) };
+        // Example IDs for SE and AE versions
+        REL::Relocation<func_t> isInMidairFunc{ RELOCATION_ID(36259, 37243) };
         _IsInMidair = trampoline.write_call<5>(isInMidairFunc.address(), HookedIsInMidair);
     }
 
