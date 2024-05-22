@@ -3,31 +3,30 @@
 
 namespace Hooks
 {
-	void PlayerHook::Hook()
-	{
-		auto& trampoline = SKSE::GetTrampoline();
+    bool PlayerHook::HookedIsInMidair(const RE::Actor* actor)
+    {
+        // Custom logic: Always return false if the actor is the player
+        if (actor->IsPlayerRef()) {
+            spdlog::info("OVERRIDING Player to not in midair");
+            return false;
+        }
 
-		// Using example addresses, replace with actual IDs
-		REL::Relocation<std::uintptr_t> shoutFunctionID{ RELOCATION_ID(0x1405b1c7, 0x1405b1c7) };
-		_ShoutFunction = trampoline.write_call<5>(shoutFunctionID.address(), HookedShoutFunction);
-	}
+        // Call the original function for other actors
+        return _IsInMidair(actor);
+    }
 
-	void PlayerHook::HookedShoutFunction(int64_t* param_1, int param_2)
-	{
-		// Unconditionally set param_2 to a value that should bypass the error checks and jump table
-		param_2 = 100; // Example value > 99
+    void PlayerHook::Hook()
+    {
+        auto& trampoline = SKSE::GetTrampoline();
 
-		// Log the modification for debugging purposes
-		spdlog::info("HookedShoutFunction called, setting param_2 to {}", param_2);
+        REL::Relocation<std::uintptr_t> isInMidairFunc{ REL::ID(36259, 37243) };
+        _IsInMidair = trampoline.write_call<5>(isInMidairFunc.address(), HookedIsInMidair);
+    }
 
-		// Call the original function with the modified param_2
-		_ShoutFunction(param_1, param_2);
-	}
-
-	void Install()
-	{
-		logger::trace("Hooking...");
-		PlayerHook::Hook();
-		logger::trace("...success");
-	}
+    void Install()
+    {
+        spdlog::trace("Installing hooks...");
+        PlayerHook::Hook();
+        spdlog::trace("Hooks installed successfully");
+    }
 }
