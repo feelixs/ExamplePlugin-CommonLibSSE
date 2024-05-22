@@ -6,10 +6,10 @@ namespace Hooks
     bool PlayerHook::HookedIsInMidair(const RE::Actor* actor)
     {
         // Custom logic: Always return false if the actor is the player
-        if (actor->IsPlayerRef()) {
+       /* if (actor->IsPlayerRef()) {
             spdlog::info("OVERRIDING Player to not in midair");
             return false;
-        }
+        }*/
         return _IsInMidair(actor);
     }
 
