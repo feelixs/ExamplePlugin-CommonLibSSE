@@ -3,7 +3,7 @@
 
 namespace Hooks
 {
-    bool PlayerHook::HookedIsInMidair(const RE::Actor* actor)
+    bool PlayerHook::HookedIsInMidair(RE::Actor* actor)
     {
         if (actor->IsPlayerRef()) {
             spdlog::info("Actor is player, returning false for IsInMidair check");

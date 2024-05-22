@@ -12,7 +12,7 @@ namespace Hooks
         static void Hook();
 
     private:
-        static bool HookedIsInMidair(const RE::Actor* actor);
+        static bool HookedIsInMidair(RE::Actor* actor);
         static inline REL::Relocation<decltype(HookedIsInMidair)> _IsInMidair;
     };
 
