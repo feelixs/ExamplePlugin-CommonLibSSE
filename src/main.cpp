@@ -1,10 +1,4 @@
 #include "PlayerHook.h"
-#include <SKSE/SKSE.h>
-#include <RE/Skyrim.h>
-#include <REL/Relocation.h>
-#include <SKSE/Trampoline.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/msvc_sink.h>
 
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
@@ -24,12 +18,12 @@ namespace
         auto sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
 #else
         auto path = logger::log_directory();
-        if (!path) {
-            util::report_and_fail("Failed to find standard logging directory"sv);
-        }
+		if (!path) {
+			util::report_and_fail("Failed to find standard logging directory"sv);
+		}
 
-        *path /= fmt::format("{}.log"sv, Plugin::NAME);
-        auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
+		*path /= fmt::format("{}.log"sv, Plugin::NAME);
+		auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
 #endif
 
 #ifndef NDEBUG
@@ -72,7 +66,7 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
 
     v.PluginVersion(Plugin::VERSION);
     v.PluginName(Plugin::NAME);
-    v.AuthorName("YourName");
+    v.AuthorName("hesmick");
     v.UsesAddressLibrary(true);
     v.CompatibleVersions({ SKSE::RUNTIME_SSE_LATEST });
     v.HasNoStructUse(true);
@@ -97,6 +91,23 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
     }
 
     Hooks::Install();
-
     return true;
+}
+
+extern "C" DLLEXPORT void* SKSEAPI RequestPluginAPI(const TDM_API::InterfaceVersion a_interfaceVersion)
+{
+    auto api = Messaging::TDMInterface::GetSingleton();
+
+    logger::info("ExamplePlugin::RequestPluginAPI called, InterfaceVersion {}", static_cast<uint8_t>(a_interfaceVersion));
+
+    switch (a_interfaceVersion) {
+        case TDM_API::InterfaceVersion::V1:
+            [[fallthrough]];
+        case TDM_API::InterfaceVersion::V2:
+            logger::info("ExamplePlugin::RequestPluginAPI returned the API singleton");
+            return static_cast<void*>(api);
+    }
+
+    logger::info("ExamplePlugin::RequestPluginAPI requested the wrong interface version");
+    return nullptr;
 }
