@@ -29,7 +29,7 @@ namespace Hooks
 
         _IsInMidair = trampoline.write_call<5>(REL::Relocation<decltype(&RE::Actor::IsInMidair)>::address(), HookedIsInMidair);
 
-        if (!_IsInMidair) {
+        if (!_IsInMidair.address()) {
             spdlog::error("Failed to hook IsInMidair function");
         } else {
             spdlog::info("Successfully hooked IsInMidair function");
