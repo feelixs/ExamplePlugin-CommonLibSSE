@@ -10,15 +10,12 @@ namespace Hooks
             spdlog::info("OVERRIDING Player to not in midair");
             return false;
         }
-
-        // Call the original function for other actors
         return _IsInMidair(actor);
     }
 
     void PlayerHook::Hook()
     {
         auto& trampoline = SKSE::GetTrampoline();
-
         REL::Relocation<std::uintptr_t> isInMidairFunc{ RELOCATION_ID(36259, 37243) };
         _IsInMidair = trampoline.write_call<5>(isInMidairFunc.address(), HookedIsInMidair);
     }
