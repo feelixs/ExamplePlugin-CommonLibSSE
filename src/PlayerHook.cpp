@@ -10,7 +10,8 @@ namespace Hooks
             spdlog::info("Actor is player, returning false for IsInMidair check");
             return false;
         }
-        return _IsInMidair(actor);
+        // Simplify for debugging purposes
+        return false;
     }
 
     const REL::Relocation<decltype(&RE::Actor::IsInMidair)>& PlayerHook::GetIsInMidair() noexcept
@@ -22,6 +23,7 @@ namespace Hooks
 void PlayerHook::Hook()
 {
     auto& trampoline = SKSE::GetTrampoline();
+    spdlog::info("Installing hook...");
     _IsInMidair = trampoline.write_call<5>(GetIsInMidair().address(), HookedIsInMidair);
     spdlog::info("Hook installed at address {}", GetIsInMidair().address());
 }
