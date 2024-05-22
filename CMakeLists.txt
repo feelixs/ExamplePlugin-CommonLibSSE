@@ -21,7 +21,7 @@ endmacro()
 #if(NOT DEFINED CompiledPluginsPath)
 #	message(FATAL_ERROR "CompiledPluginsPath is not set")
 #endif()
-set(CompiledPluginsPath "D:\\skyrim mod\\SSE16117\\ExamplePlugin-CommonLibSSE\\build\\src\\Release\\SKSE\\Plugins")
+set(CompiledPluginsPath "D:\\skyrim mod\\SSE16117\\ExamplePlugin-CommonLibSSE\\build\\src\\Release")
 
 option(COPY_OUTPUT "Copy the output of build operations to the game directory" OFF)
 option(ENABLE_SKYRIM_SE "Enable support for Skyrim SE in the dynamic runtime feature." ON)
