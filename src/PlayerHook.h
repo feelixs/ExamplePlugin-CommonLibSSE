@@ -1,8 +1,9 @@
 #pragma once
 
-#include <RE/Skyrim.h>
 #include <SKSE/SKSE.h>
+#include <RE/Skyrim.h>
 #include <REL/Relocation.h>
+#include <SKSE/Trampoline.h>
 
 namespace Hooks
 {
@@ -12,8 +13,8 @@ namespace Hooks
         static void Hook();
 
     private:
-        static bool HookedIsInMidair(RE::Actor* actor);
-        static inline REL::Relocation<decltype(HookedIsInMidair)> _IsInMidair;
+        static bool HookedIsInMidair(const RE::Actor* actor);
+        static inline REL::Relocation<decltype(&RE::Actor::IsInMidair)> _IsInMidair;
     };
 
     void Install();
