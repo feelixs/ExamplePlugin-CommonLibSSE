@@ -22,8 +22,8 @@ namespace Hooks
 
     void Install()
     {
-        spdlog::trace("Installing hooks...");
+        spdlog::info("Installing hooks...");
         PlayerHook::Hook();
-        spdlog::trace("Hooks installed successfully");
+        spdlog::info("Hooks installed successfully");
     }
 }
